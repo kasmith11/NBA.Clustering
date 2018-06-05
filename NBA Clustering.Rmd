@@ -1,8 +1,6 @@
 ---
 title: "NBA Clustering"
-output:
-  html_document:
-    keep_md: true
+output: github_document
 ---
 The clustering analysis uses the ballr package to access the per game statistics of players in the 2017 season from https://www.basketball-reference.com/ 
 
@@ -88,6 +86,7 @@ NBA.Kmeans5 <- kmeans(dist_NBA.Kmeans, centers = 5, nstart = 25)
 Takes the cluster assignments from the model
 
 ```{r}
+segment.NBA <- mutate(NBA.Kmeans, cluster = cluster.NBA)
 cluster.NBA <- NBA.Kmeans5$cluster
 ```
 
