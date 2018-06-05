@@ -63,7 +63,7 @@ ggplot(elbow.NBA, aes(x = k, y = tot_withinss)) +
   scale_x_continuous(breaks = 1:30)
 ```
 
-![](NBA_Clustering_files/figure-markdown_github/Figure1-1.png)
+![](NBA_Clustering_files/figure-markdown_github/Figure1-1.png?raw=true)
 
 Runs a Kmeans model and keeps the silhouette widths for each level of k
 
@@ -92,7 +92,7 @@ ggplot(sil_NBA, aes(x = k, y = sil_width)) +
   scale_x_continuous(breaks = 2:30)
 ```
 
-![](NBA_Clustering_files/figure-markdown_github/Figure2-1.png) Creates a Kmeans model with k = 5
+![](NBA_Clustering_files/figure-markdown_github/Figure2-1.png?raw=true) Creates a Kmeans model with k = 5
 
 ``` r
 NBA.Kmeans5 <- kmeans(dist_NBA.Kmeans, centers = 5, nstart = 25)
