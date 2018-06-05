@@ -7,12 +7,14 @@ output:
 The clustering analysis uses the ballr package to access the per game statistics of players in the 2017 season from https://www.basketball-reference.com/ 
 
 ```{r}
+library(ballr)
 NBA <- NBAPerGameStatistics(season = 2017)
 ```
 
 Data preperation for this clustering analysis include filtering out players who played less than 41 games, getting rid of all null values by imputing 0, scaling the data, calculating the distance measures, conducting pca, and finally creating a dataframe from the results of the pca.
 
 ```{r}
+library(dplyr)
 NBA.41 <- filter(NBA, g >= 41)
 NBA.Kmeans <- NBA.41[,9:30]
 NBA.Kmeans[is.na(NBA.Kmeans)] <- 0
@@ -25,6 +27,7 @@ Nbacomp <- data.frame(pca$x[,1:5])
 The following runs kmeans with a k between 1 and 30. It then saves the sum of squares for each model.
 
 ```{r}
+library(purrr)
 tot_withinss <- map_dbl(1:30,  function(k){
   model <- kmeans(Nbacomp, centers = k)
   model$tot.withinss
@@ -33,7 +36,7 @@ tot_withinss <- map_dbl(1:30,  function(k){
 
 Creates a dataframe for the sum of squares for each kmeans model.
 
-```{r}
+```{r echo=TRUE}
 elbow.NBA <- data.frame(
   k = 1:30,
   tot_withinss = tot_withinss
@@ -43,6 +46,7 @@ elbow.NBA <- data.frame(
 Plots the sum of squares for each level of k so that the optimal k can be chosen (k = 5)
 
 ```{r}
+library(ggplot2)
 ggplot(elbow.NBA, aes(x = k, y = tot_withinss)) +
   geom_line() +
   scale_x_continuous(breaks = 1:30)
@@ -51,6 +55,7 @@ ggplot(elbow.NBA, aes(x = k, y = tot_withinss)) +
 Runs a Kmeans model and keeps the silhouette widths for each level of k
 
 ```{r}
+library(cluster)
 sil_width <- map_dbl(2:30,  function(k){
   model <- pam(NBA.Kmeans, k = k)
   model$silinfo$avg.width
@@ -89,7 +94,6 @@ cluster.NBA <- NBA.Kmeans5$cluster
 Creates two seperate data frames one for assigning the cluster assignments to players and another data frame to analyze the means of each cluster
 
 ```{r}
-segment.NBA <- mutate(NBA.Kmeans, cluster = cluster.NBA)
 Cluster.Assignments <- mutate(NBA.41, cluster = cluster.NBA)
 ```
 
@@ -105,7 +109,8 @@ Cluster5 <- filter(Cluster.Assignments, cluster == '5')
 
 Calculates the mean for each stat by cluster
 
-```{r}
+```{r echo=TRUE}
 Cluster.means <- aggregate(segment.NBA, by = list(segment.NBA$cluster), FUN = "mean", na.rm = TRUE)
+Cluster.means
 ```
 
