@@ -1,22 +1,22 @@
-#The clustering analysis uses the ballr package to access the per game statistics of players in the 2017 season 
+#The clustering analysis uses the ballr package to access the per game statistics of players in the 2019 season 
 #from https://www.basketball-reference.com/ 
-NBA <- NBAPerGameStatistics(season = 2017)
+library(ballr)
+NBA <- NBAPerGameStatistics(season = 2019)
+NBA <- NBA[, 8:30]
 
 #Data preperation for this clustering analysis include filtering out players who played less
 #than 41 games, getting rid of all null values by imputing 0, scaling the data, calculating the 
-#distance measures, conducting pca, and finally creating a dataframe from the results of the pca.
-NBA.41 <- filter(NBA, g >= 41)
-NBA.Kmeans <- NBA.41[,9:30]
-NBA.Kmeans[is.na(NBA.Kmeans)] <- 0
-Scaled_NBA.Kmeans <- scale(NBA.Kmeans)
-dist_NBA.Kmeans <- dist(NBA.Kmeans)
-pca <- prcomp(Scaled_NBA.Kmeans)
-Nbacomp <- data.frame(pca$x[,1:5])
+#distance measures.
+library(tidyverse)
+NBA <- NBA %>%
+  replace_na(.) %>%
+  scale(.) %>%
+  dist(.)
 
 #The following runs kmeans with a k between 1 and 30. It then saves the sum of squares for 
 #each model
 tot_withinss <- map_dbl(1:30,  function(k){
-  model <- kmeans(Nbacomp, centers = k)
+  model <- kmeans(NBA, centers = k)
   model$tot.withinss
 })
 
