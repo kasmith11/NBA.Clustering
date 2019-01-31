@@ -72,6 +72,6 @@ library(scales)
 Cluster.means %>%
   as_data_frame() %>%
   mutate_if(is_numeric, funs(rescale)) %>%
-  tail(5) %>% select(1:10) -> Cluster.means.radar
+  select(1:10) -> Cluster.means.radar
 
 ggradar(Cluster.means.radar)
