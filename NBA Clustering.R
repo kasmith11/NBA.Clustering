@@ -71,15 +71,7 @@ library(scales)
 
 Cluster.means %>%
   as_data_frame() %>%
-  add_rownames( var = "cluster" ) %>%
   mutate_if(is_numeric, funs(rescale)) %>%
   tail(5) %>% select(1:10) -> Cluster.means.radar
 
 ggradar(Cluster.means.radar)
-
-#Creates data frames of each cluster
-Cluster1 <- filter(Cluster.Assignments, cluster == '1')
-Cluster2 <- filter(Cluster.Assignments, cluster == '2')
-Cluster3 <- filter(Cluster.Assignments, cluster == '3')
-Cluster4 <- filter(Cluster.Assignments, cluster == '4')
-Cluster5 <- filter(Cluster.Assignments, cluster == '5')
