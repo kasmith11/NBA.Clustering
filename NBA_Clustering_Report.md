@@ -1,0 +1,171 @@
+NBA Clustering Report
+================
+
+``` r
+#The clustering analysis uses the ballr package to access the per game statistics of players in the 2019 season 
+#from https://www.basketball-reference.com/ 
+library(ballr)
+NBA <- NBAPerGameStatistics(season = 2019)
+NBA <- NBA[, 8:28]
+```
+
+``` r
+#Data preperation for this clustering analysis include filtering out players who played less
+#than 41 games, getting rid of all null values by imputing 0, scaling the data, calculating the 
+#distance measures.
+library(tidyverse)
+```
+
+    ## ── Attaching packages ───────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+
+    ## ✔ ggplot2 3.1.0     ✔ purrr   0.2.5
+    ## ✔ tibble  2.0.1     ✔ dplyr   0.7.8
+    ## ✔ tidyr   0.8.2     ✔ stringr 1.3.1
+    ## ✔ readr   1.3.1     ✔ forcats 0.3.0
+
+    ## Warning: package 'tibble' was built under R version 3.5.2
+
+    ## ── Conflicts ──────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
+
+``` r
+NBA_dist <- NBA %>%
+  replace_na(.) %>%
+  scale(.) %>%
+  dist(.)
+```
+
+``` r
+#The following runs kmeans with a k between 1 and 30. It then saves the sum of squares for 
+#each model
+tot_withinss <- map_dbl(1:30,  function(k){
+  model <- kmeans(NBA_dist, centers = k)
+  model$tot.withinss
+})
+```
+
+``` r
+#Creates a dataframe for the sum of squares for each kmeans model
+elbow.NBA <- data.frame(
+  k = 1:30,
+  tot_withinss = tot_withinss
+)
+```
+
+``` r
+# Plots the sum of squares for each level of k so that the optimal k can be chosen (k = 5)
+ggplot(elbow.NBA, aes(x = k, y = tot_withinss)) +
+  geom_line() +
+  scale_x_continuous(breaks = 1:30)
+```
+
+![](NBA_Clustering_Report_files/figure-markdown_github/unnamed-chunk-5-1.png)
+
+``` r
+#Runs a Kmeans model and keeps the silhouette widths for each level of k
+library(cluster)
+sil_width <- map_dbl(2:30,  function(k){
+  model <- pam(NBA_dist, k = k)
+  model$silinfo$avg.width
+})
+```
+
+``` r
+# Creates a dataframe that contains the silhouette width for each level of k
+sil_NBA <- data.frame(
+  k = 2:30,
+  sil_width = sil_width
+)
+```
+
+``` r
+# Plots the silhouette widths for each level of k to see how well on average each player
+#fits in their cluster
+ggplot(sil_NBA, aes(x = k, y = sil_width)) +
+  geom_line() +
+  scale_x_continuous(breaks = 2:30)
+```
+
+![](NBA_Clustering_Report_files/figure-markdown_github/unnamed-chunk-8-1.png)
+
+``` r
+#Creates a Kmeans model with k = 5
+NBA.Kmeans5 <- kmeans(NBA_dist, centers = 5, nstart = 25)
+
+#Takes the cluster assignments from the model
+cluster.NBA <- NBA.Kmeans5$cluster
+```
+
+``` r
+#Creates two seperate data frames one for assigning the cluster assignments to players and
+#another data frame to analyze the means of each cluster
+Cluster.Assignments <- mutate(NBA, cluster = cluster.NBA)
+```
+
+``` r
+#Calculates the mean for each stat by cluster
+Cluster.means <- aggregate(Cluster.Assignments, by = list(Cluster.Assignments$cluster), FUN = "mean", na.rm = TRUE)
+```
+
+    ## 
+    ## Attaching package: 'scales'
+
+    ## The following object is masked from 'package:purrr':
+    ## 
+    ##     discard
+
+    ## The following object is masked from 'package:readr':
+    ## 
+    ##     col_factor
+
+    ## Warning: `as_data_frame()` is deprecated, use `as_tibble()` (but mind the new semantics).
+    ## This warning is displayed once per session.
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+    ## Warning: Deprecated
+
+![](NBA_Clustering_Report_files/figure-markdown_github/unnamed-chunk-12-1.png)
