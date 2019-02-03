@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 NBA Clustering
 ================
 
@@ -111,21 +116,10 @@ segment.NBA <- mutate(NBA.Kmeans, cluster = cluster.NBA)
 Cluster.Assignments <- mutate(NBA.41, cluster = cluster.NBA)
 ```
 
-Creates data frames of each cluster
-
-``` r
-Cluster1 <- filter(Cluster.Assignments, cluster == '1')
-Cluster2 <- filter(Cluster.Assignments, cluster == '2')
-Cluster3 <- filter(Cluster.Assignments, cluster == '3')
-Cluster4 <- filter(Cluster.Assignments, cluster == '4')
-Cluster5 <- filter(Cluster.Assignments, cluster == '5')
-```
-
 Calculates the mean for each stat by cluster
 
 ``` r
 Cluster.means <- aggregate(segment.NBA, by = list(segment.NBA$cluster), FUN = "mean", na.rm = TRUE)
-Cluster.means
 ```
 
     ##   Group.1       fg       fga fgpercent       x3p     x3pa x3ppercent
@@ -152,3 +146,18 @@ Cluster.means
     ## 3 1.949123  8.679825       3
     ## 4 2.319355 19.712903       4
     ## 5 1.557025  4.928926       5
+
+``` r
+
+#https://www.ggplot2-exts.org/ggradar.html
+library(ggradar)
+library(ggplot2)
+library(scales)
+
+Cluster.means %>%
+  as_data_frame() %>%
+  mutate_if(is_numeric, funs(rescale)) %>%
+  select(1:10) -> Cluster.means.radar
+
+ggradar(Cluster.means.radar)
+```
