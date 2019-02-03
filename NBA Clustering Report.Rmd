@@ -88,7 +88,6 @@ cluster.NBA <- NBA.Kmeans5$cluster
 #Creates two seperate data frames one for assigning the cluster assignments to players and
 #another data frame to analyze the means of each cluster
 Cluster.Assignments <- mutate(NBA, cluster = cluster.NBA)
-Cluster.Assignments <- mutate(NBA.41, cluster = cluster.NBA)
 ```
 
 ```{r}
