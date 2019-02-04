@@ -14,22 +14,6 @@ NBA <- NBA[, 8:28]
 #than 41 games, getting rid of all null values by imputing 0, scaling the data, calculating the 
 #distance measures.
 library(tidyverse)
-```
-
-    ## ── Attaching packages ───────────────────────────────────────────────────────── tidyverse 1.2.1 ──
-
-    ## ✔ ggplot2 3.1.0     ✔ purrr   0.2.5
-    ## ✔ tibble  2.0.1     ✔ dplyr   0.7.8
-    ## ✔ tidyr   0.8.2     ✔ stringr 1.3.1
-    ## ✔ readr   1.3.1     ✔ forcats 0.3.0
-
-    ## Warning: package 'tibble' was built under R version 3.5.2
-
-    ## ── Conflicts ──────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-
-``` r
 NBA_dist <- NBA %>%
   replace_na(.) %>%
   scale(.) %>%
@@ -108,64 +92,18 @@ Cluster.Assignments <- mutate(NBA, cluster = cluster.NBA)
 Cluster.means <- aggregate(Cluster.Assignments, by = list(Cluster.Assignments$cluster), FUN = "mean", na.rm = TRUE)
 ```
 
-    ## 
-    ## Attaching package: 'scales'
+``` r
+#https://www.ggplot2-exts.org/ggradar.html
+library(ggradar)
+library(ggplot2)
+library(scales)
 
-    ## The following object is masked from 'package:purrr':
-    ## 
-    ##     discard
+Cluster.means %>%
+  as_data_frame() %>%
+  mutate_if(is_numeric, funs(rescale)) %>%
+  select(1:10) -> Cluster.means.radar
 
-    ## The following object is masked from 'package:readr':
-    ## 
-    ##     col_factor
-
-    ## Warning: `as_data_frame()` is deprecated, use `as_tibble()` (but mind the new semantics).
-    ## This warning is displayed once per session.
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
-
-    ## Warning: Deprecated
+ggradar(Cluster.means.radar)
+```
 
 ![](NBA_Clustering_Report_files/figure-markdown_github/unnamed-chunk-12-1.png)

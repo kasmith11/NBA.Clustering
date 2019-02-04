@@ -16,7 +16,7 @@ NBA <- NBAPerGameStatistics(season = 2019)
 NBA <- NBA[, 8:28]
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 #Data preperation for this clustering analysis include filtering out players who played less
 #than 41 games, getting rid of all null values by imputing 0, scaling the data, calculating the 
 #distance measures.
@@ -96,7 +96,7 @@ Cluster.means <- aggregate(Cluster.Assignments, by = list(Cluster.Assignments$cl
 
 ```
 
-```{r, echo = FALSE}
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 #https://www.ggplot2-exts.org/ggradar.html
 library(ggradar)
 library(ggplot2)
