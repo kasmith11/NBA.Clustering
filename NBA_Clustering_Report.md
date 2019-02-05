@@ -1,6 +1,8 @@
 NBA Clustering Report
 ================
 
+The clustering analysis uses the ballr package to access the per game statistics of players in the 2019 season from <https://www.basketball-reference.com/>
+
 ``` r
 #The clustering analysis uses the ballr package to access the per game statistics of players in the 2019 season 
 #from https://www.basketball-reference.com/ 
@@ -8,6 +10,8 @@ library(ballr)
 NBA <- NBAPerGameStatistics(season = 2019)
 NBA <- NBA[, 8:28]
 ```
+
+Data preperation for this clustering analysis includes getting rid of all null values by imputing 0, scaling the data, and calculating distance measures.
 
 ``` r
 #Data preperation for this clustering analysis include filtering out players who played less
@@ -20,6 +24,8 @@ NBA_dist <- NBA %>%
   dist(.)
 ```
 
+The following runs kmeans with a k between 1 and 30. It then saves the sum of squares for each model.
+
 ``` r
 #The following runs kmeans with a k between 1 and 30. It then saves the sum of squares for 
 #each model
@@ -29,6 +35,8 @@ tot_withinss <- map_dbl(1:30,  function(k){
 })
 ```
 
+Creates a dataframe for the sum of squares for each kmeans model.
+
 ``` r
 #Creates a dataframe for the sum of squares for each kmeans model
 elbow.NBA <- data.frame(
@@ -36,6 +44,8 @@ elbow.NBA <- data.frame(
   tot_withinss = tot_withinss
 )
 ```
+
+Plots the sum of squares for each level of k so that the optimal k can be chosen (k = 5)
 
 ``` r
 # Plots the sum of squares for each level of k so that the optimal k can be chosen (k = 5)
@@ -46,6 +56,8 @@ ggplot(elbow.NBA, aes(x = k, y = tot_withinss)) +
 
 ![](NBA_Clustering_Report_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
+Runs a Kmeans model and keeps the silhouette widths for each level of k
+
 ``` r
 #Runs a Kmeans model and keeps the silhouette widths for each level of k
 library(cluster)
@@ -55,6 +67,8 @@ sil_width <- map_dbl(2:30,  function(k){
 })
 ```
 
+Creates a dataframe that contains the silhouette width for each level of k
+
 ``` r
 # Creates a dataframe that contains the silhouette width for each level of k
 sil_NBA <- data.frame(
@@ -62,6 +76,8 @@ sil_NBA <- data.frame(
   sil_width = sil_width
 )
 ```
+
+Plots the silhouette widths for each level of k to see how well on average each player fits in their cluster
 
 ``` r
 # Plots the silhouette widths for each level of k to see how well on average each player
@@ -72,6 +88,8 @@ ggplot(sil_NBA, aes(x = k, y = sil_width)) +
 ```
 
 ![](NBA_Clustering_Report_files/figure-markdown_github/unnamed-chunk-8-1.png)
+
+Creates a Kmeans model with k = 5 and creates a dataframe with cluster assignments.
 
 ``` r
 #Creates a Kmeans model with k = 5
