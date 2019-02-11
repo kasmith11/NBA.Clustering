@@ -29,7 +29,7 @@ NBA_dist <- NBA %>%
   dist(.)
 ```
 
-The following runs kmeans with a k between 1 and 30. It then saves the sum of squares for each model.
+The following runs kmeans with a k between 1 and 30. It then saves the sum of squares for each model. The goal of this is to determine the optimal number of clusters that we will use to describe the data.
 
 ```{r}
 #The following runs kmeans with a k between 1 and 30. It then saves the sum of squares for 
@@ -50,7 +50,7 @@ elbow.NBA <- data.frame(
 )
 ```
 
-Plots the sum of squares for each level of k so that the optimal k can be chosen (k = 5)
+Plots the sum of squares for each level of k so that the optimal k can be chosen. Here, the elbow seems to be anywhere from k = 5 to k = 7. Since there are five positions in the NBA, a good place to start would be at k = 5.
 
 ```{r}
 # Plots the sum of squares for each level of k so that the optimal k can be chosen (k = 5)
@@ -59,7 +59,7 @@ ggplot(elbow.NBA, aes(x = k, y = tot_withinss)) +
   scale_x_continuous(breaks = 1:30)
 ```
 
-Runs a Kmeans model and keeps the silhouette widths for each level of k
+Runs a Kmeans model and keeps the silhouette widths for each level of k. Silhouette width measures how well clustered the objects are. Values range from -1 to 1 with higher values indicating a better fit.
 
 ```{r}
 #Runs a Kmeans model and keeps the silhouette widths for each level of k
@@ -70,7 +70,7 @@ sil_width <- map_dbl(2:30,  function(k){
 })
 ```
 
-Creates a dataframe that contains the silhouette width for each level of k
+Creates a dataframe that contains the silhouette width for each level of k.
 
 ```{r}
 # Creates a dataframe that contains the silhouette width for each level of k
@@ -80,7 +80,7 @@ sil_NBA <- data.frame(
 )
 ```
 
-Plots the silhouette widths for each level of k to see how well on average each player fits in their cluster
+Plots the silhouette widths for each level of k to see how well on average each player fits in their cluster.
 
 ```{r}
 # Plots the silhouette widths for each level of k to see how well on average each player
@@ -111,6 +111,7 @@ Cluster.means <- aggregate(Cluster.Assignments, by = list(Cluster.Assignments$cl
 
 ```
 
+It seems that the clusters are measuring tiers of performance with Cluster 4 ranking highly for most categories.
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
 #https://www.ggplot2-exts.org/ggradar.html
 library(ggradar)
